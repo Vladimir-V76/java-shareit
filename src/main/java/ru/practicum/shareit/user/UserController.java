@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.NewUserRequest;
@@ -49,8 +48,8 @@ public class UserController {
             @Positive(message = "Id должно быть числом положительным")
             @PathVariable Long userId,
 
-            @Valid @RequestBody UpdateUserRequest newUser) {
-        return userService.update(newUser, userId);
+            @Valid @RequestBody UpdateUserRequest user) {
+        return userService.update(user, userId);
     }
 
     @DeleteMapping("/{userId}")

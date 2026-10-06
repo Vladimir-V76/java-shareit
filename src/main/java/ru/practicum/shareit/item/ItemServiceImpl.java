@@ -4,9 +4,12 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -26,21 +29,39 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findById(Long itemId) {
-        return null;
+        return ItemMapper.mapToItemDto(itemRepository.findById(itemId));
     }
 
     @Override
     public List<ItemDto> findAllByOwnerId(Long ownerId) {
-        return List.of();
+        userRepository.checkUserId(ownerId);
+        return itemRepository.findAllByOwnerId(ownerId).stream().map(ItemMapper::mapToItemDto).toList();
     }
 
     @Override
-    public ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) {
-        return null;
+    public ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) throws AccessDeniedException {
+        userRepository.checkUserId(ownerId);
+        Item item = itemRepository.findById(itemId);
+        if (!Objects.equals(ownerId, item.getOwnerId())) {
+            throw new AccessDeniedException("Обновлять данные о вещах может только владелец");
+        }
+        ItemMapper.updateItemFields(item, updateItem);
+        return ItemMapper.mapToItemDto(itemRepository.update(item));
     }
 
     @Override
-    public void delete(Long itemId, Long ownerId) {
+    public void delete(Long itemId, Long ownerId) throws AccessDeniedException {
+        userRepository.checkUserId(ownerId);
+        Item item = itemRepository.findById(itemId);
+        if (!Objects.equals(ownerId, item.getOwnerId())) {
+            throw new AccessDeniedException("Удалять данные о вещах может только владелец");
+        }
+        itemRepository.delete(item);
+    }
 
+    @Override
+    public List<ItemDto> searchItems(String searchText) {
+        if (searchText.isBlank()) { return List.of(); }
+        return itemRepository.searchItems(searchText).stream().map(ItemMapper::mapToItemDto).toList();
     }
 }

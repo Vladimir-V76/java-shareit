@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import ru.practicum.shareit.item.model.Available;
 
 /**
  * TODO Sprint add-controllers.

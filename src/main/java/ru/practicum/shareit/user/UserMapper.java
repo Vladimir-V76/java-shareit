@@ -26,15 +26,6 @@ public class UserMapper {
         return user;
     }
 
-    public static User mapToUser(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setEmail(userDto.getEmail());
-        user.setName(userDto.getName());
-
-        return user;
-    }
-
     public static void updateUserFields(User user, UpdateUserRequest updateUser) {
         if (updateUser.hasEmail()) {
             user.setEmail(updateUser.getEmail());

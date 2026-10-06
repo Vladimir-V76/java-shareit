@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(UpdateUserRequest updateUser, Long userId) {
-        User user = UserMapper.mapToUser(findById(userId));
+        User user = repository.findById(userId);
         if (updateUser.hasEmail()) {
             repository.checkUsageEmail(updateUser.getEmail());
         }
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long userId) {
-        User user = UserMapper.mapToUser(findById(userId));
+        User user = repository.findById(userId);
         repository.delete(userId, user.getEmail());
     }
 }
