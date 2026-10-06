@@ -8,9 +8,14 @@ import java.util.List;
 @Service
 public interface ItemRepository {
     Item create(Item item);
+
     Item findById(Long itemId);
+
     List<Item> findAllByOwnerId(Long ownerId);
+
     Item update(Item item);
+
     void delete(Item item);
+
     List<Item> searchItems(String searchText);
 }

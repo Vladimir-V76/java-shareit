@@ -61,7 +61,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItems(String searchText) {
-        if (searchText.isBlank()) { return List.of(); }
-        return itemRepository.searchItems(searchText).stream().map(ItemMapper::mapToItemDto).toList();
+        if (searchText.isBlank()) {
+            return List.of();
+        }
+        return itemRepository.searchItems(searchText.toLowerCase()).stream().map(ItemMapper::mapToItemDto).toList();
     }
 }

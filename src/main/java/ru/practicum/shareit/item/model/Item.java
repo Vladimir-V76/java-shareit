@@ -3,10 +3,6 @@ package ru.practicum.shareit.item.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @EqualsAndHashCode(of = "id")
 public class Item {
@@ -14,5 +10,5 @@ public class Item {
     Long ownerId;
     String name;
     String description;
-    Available available;
+    Boolean available;
 }

@@ -57,7 +57,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void checkUsageEmail(String email) {
         if (usersByEmail.containsKey(email)) {
-            throw new DuplicateException("Пользователь с email: "+ email + " уже зарегистрирован");
+            throw new DuplicateException("Пользователь с email: " + email + " уже зарегистрирован");
         }
     }
 

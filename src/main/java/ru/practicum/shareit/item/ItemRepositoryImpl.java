@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.model.Available;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
@@ -73,8 +72,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<Item> searchItems(String searchText) {
         return itemById.values().stream()
-                .filter(i -> i.getName().contains(searchText) || i.getDescription().contains(searchText))
-                .filter(i -> i.getAvailable().equals(Available.FREE))
+                .filter(i -> i.getName().toLowerCase().contains(searchText) ||
+                        i.getDescription().toLowerCase().contains(searchText))
+                .filter(i -> i.getAvailable() == true)
                 .toList();
     }
 }
