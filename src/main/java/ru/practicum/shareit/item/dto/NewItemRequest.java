@@ -2,19 +2,14 @@ package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import ru.practicum.shareit.item.model.Available;
-
-/**
- * TODO Sprint add-controllers.
- */
 
 @Data
-public class ItemDto {
+public class NewItemRequest {
+
     @NotBlank(message = "Имя должно быть указано")
     String name;
-
     String description;
 
-    @NotBlank(message = "Статус занятости должен быть указан")
+    @NotBlank(message = "Статус доступности должен быть указан")
     String available;
 }
