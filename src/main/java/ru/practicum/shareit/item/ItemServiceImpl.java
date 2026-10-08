@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
         if (!Objects.equals(ownerId, item.getOwnerId())) {
             throw new AccessDeniedException("Удалять данные о вещах может только владелец");
         }
-        itemRepository.delete(item);
+        itemRepository.deleteItemById(item);
     }
 
     @Override

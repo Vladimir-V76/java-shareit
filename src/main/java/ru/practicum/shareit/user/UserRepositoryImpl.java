@@ -14,19 +14,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     private static final Map<Long, User> usersById = new HashMap<>();
     private static final Map<String, User> usersByEmail = new HashMap<>();
+    private static Long id = 1L;
 
     @Override
     public User create(User user) {
-        long id = 1L;
         if (!usersById.isEmpty()) {
             checkUsageEmail(user.getEmail());
-            id = usersById.keySet().stream().max(Comparator.naturalOrder()).orElse(0L);
-            id = id + 1;
         }
         user.setId(id);
         usersByEmail.put(user.getEmail(), user);
         usersById.put(id, user);
-
+        id = id + 1;
         return user;
     }
 
@@ -63,7 +61,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     public void checkUserId(Long userId) {
         if (!usersById.containsKey(userId)) {
-            throw new NotFoundException("Пользователь с id: " + userId + "не найден");
+            throw new NotFoundException("Пользователь с id: " + userId + " не найден");
         }
     }
 }

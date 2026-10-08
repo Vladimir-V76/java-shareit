@@ -11,14 +11,10 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     private static final Map<Long, Item> itemById = new HashMap<>();
     private static final Map<Long, List<Item>> itemByOwner = new HashMap<>();
+    private static Long id = 1L;
 
     @Override
     public Item create(Item item) {
-        long id = 1L;
-        if (!itemById.isEmpty()) {
-            id = itemById.keySet().stream().max(Comparator.naturalOrder()).orElse(0L);
-            id = id + 1;
-        }
         item.setId(id);
         itemById.put(id, item);
         Long ownerId = item.getOwnerId();
@@ -28,7 +24,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         }
         items.add(item);
         itemByOwner.put(ownerId, items);
-
+        id = id + 1;
         return item;
     }
 
@@ -37,7 +33,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         if (itemById.containsKey(itemId)) {
             return itemById.get(itemId);
         } else {
-            throw new NotFoundException("Вещь с id: " + itemId + "не найдена");
+            throw new NotFoundException("Вещь с id: " + itemId + " не найдена");
         }
     }
 
@@ -46,7 +42,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         if (itemByOwner.containsKey(ownerId)) {
             return itemByOwner.get(ownerId);
         } else {
-            throw new NotFoundException("У пользователя с id: " + ownerId + "нет вещей");
+            return List.of();
         }
     }
 
@@ -62,11 +58,17 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void delete(Item item) {
+    public void deleteItemById(Item item) {
         itemById.remove(item.getId());
         List<Item> items = itemByOwner.get(item.getOwnerId());
         items.remove(item);
         itemByOwner.put(item.getOwnerId(), items);
+    }
+
+    @Override
+    public void deleteItemByOwnerId(Long ownerId) {
+        itemByOwner.remove(ownerId);
+        itemById.entrySet().removeIf(entry -> ownerId.equals(entry.getValue().getOwnerId()));
     }
 
     @Override
