@@ -1,13 +1,14 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.ForbiddenItemUpdateException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findById(Long itemId) {
-        return ItemMapper.mapToItemDto(itemRepository.findById(itemId));
+        return ItemMapper.mapToItemDto(findItemById(itemId));
     }
 
     @Override
@@ -39,22 +40,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) throws AccessDeniedException {
+    public ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) {
         userRepository.checkUserId(ownerId);
-        Item item = itemRepository.findById(itemId);
+        Item item = findItemById(itemId);
         if (!Objects.equals(ownerId, item.getOwnerId())) {
-            throw new AccessDeniedException("Обновлять данные о вещах может только владелец");
+            throw new ForbiddenItemUpdateException("Обновлять данные о вещах может только владелец");
         }
         ItemMapper.updateItemFields(item, updateItem);
         return ItemMapper.mapToItemDto(itemRepository.update(item));
     }
 
     @Override
-    public void delete(Long itemId, Long ownerId) throws AccessDeniedException {
+    public void delete(Long itemId, Long ownerId) {
         userRepository.checkUserId(ownerId);
-        Item item = itemRepository.findById(itemId);
+        Item item = findItemById(itemId);
         if (!Objects.equals(ownerId, item.getOwnerId())) {
-            throw new AccessDeniedException("Удалять данные о вещах может только владелец");
+            throw new ForbiddenItemUpdateException("Удалять данные о вещах может только владелец");
         }
         itemRepository.deleteItemById(item);
     }
@@ -65,5 +66,10 @@ public class ItemServiceImpl implements ItemService {
             return List.of();
         }
         return itemRepository.searchItems(searchText.toLowerCase()).stream().map(ItemMapper::mapToItemDto).toList();
+    }
+
+    private Item findItemById(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещь с id: " + itemId + " не найдена"));
     }
 }

@@ -4,7 +4,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface ItemService {
@@ -14,9 +13,9 @@ public interface ItemService {
 
     List<ItemDto> findAllByOwnerId(Long ownerId);
 
-    ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) throws AccessDeniedException;
+    ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId);
 
-    void delete(Long itemId, Long ownerId) throws AccessDeniedException;
+    void delete(Long itemId, Long ownerId);
 
     List<ItemDto> searchItems(String searchText);
 }

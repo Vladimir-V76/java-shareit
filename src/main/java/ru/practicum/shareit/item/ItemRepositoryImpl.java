@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
@@ -29,12 +28,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Item findById(Long itemId) {
-        if (itemById.containsKey(itemId)) {
-            return itemById.get(itemId);
-        } else {
-            throw new NotFoundException("Вещь с id: " + itemId + " не найдена");
-        }
+    public Optional<Item> findById(Long itemId) {
+        return Optional.ofNullable(itemById.get(itemId));
     }
 
     @Override
