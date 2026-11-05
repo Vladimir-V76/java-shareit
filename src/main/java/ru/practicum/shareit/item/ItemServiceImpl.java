@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ForbiddenItemUpdateException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -13,19 +15,17 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     public final ItemRepository itemRepository;
     public final UserRepository userRepository;
 
-    public ItemServiceImpl(ItemRepository itemRepository, UserRepository userRepository) {
-        this.itemRepository = itemRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
+    @Transactional
     public ItemDto create(NewItemRequest newItem, Long ownerId) {
-        userRepository.checkUserId(ownerId);
-        return ItemMapper.mapToItemDto(itemRepository.create(ItemMapper.mapToItem(newItem, ownerId)));
+        findUserById(ownerId);
+        return ItemMapper.mapToItemDto(itemRepository.save(ItemMapper.mapToItem(newItem, ownerId)));
     }
 
     @Override
@@ -35,29 +35,31 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllByOwnerId(Long ownerId) {
-        userRepository.checkUserId(ownerId);
+        findUserById(ownerId);
         return itemRepository.findAllByOwnerId(ownerId).stream().map(ItemMapper::mapToItemDto).toList();
     }
 
     @Override
+    @Transactional
     public ItemDto update(UpdateItemRequest updateItem, Long ownerId, Long itemId) {
-        userRepository.checkUserId(ownerId);
+        findUserById(ownerId);
         Item item = findItemById(itemId);
         if (!Objects.equals(ownerId, item.getOwnerId())) {
             throw new ForbiddenItemUpdateException("Обновлять данные о вещах может только владелец");
         }
         ItemMapper.updateItemFields(item, updateItem);
-        return ItemMapper.mapToItemDto(itemRepository.update(item));
+        return ItemMapper.mapToItemDto(itemRepository.save(item));
     }
 
     @Override
+    @Transactional
     public void delete(Long itemId, Long ownerId) {
-        userRepository.checkUserId(ownerId);
+        findUserById(ownerId);
         Item item = findItemById(itemId);
         if (!Objects.equals(ownerId, item.getOwnerId())) {
             throw new ForbiddenItemUpdateException("Удалять данные о вещах может только владелец");
         }
-        itemRepository.deleteItemById(item);
+        itemRepository.deleteById(itemId);
     }
 
     @Override
@@ -71,5 +73,10 @@ public class ItemServiceImpl implements ItemService {
     private Item findItemById(Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь с id: " + itemId + " не найдена"));
+    }
+
+    private void findUserById(long id) {
+        userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
     }
 }

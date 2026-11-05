@@ -11,10 +11,6 @@ import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @RestController
 @RequestMapping("/items")
 @Validated
@@ -60,7 +56,7 @@ public class ItemController {
             @Positive(message = "Id вещи должно быть числом положительным")
             @PathVariable Long itemId,
 
-            @RequestBody UpdateItemRequest item) throws AccessDeniedException {
+            @RequestBody UpdateItemRequest item) {
         return itemService.update(item, userId, itemId);
     }
 
@@ -72,7 +68,7 @@ public class ItemController {
             Long userId,
 
             @Positive(message = "Id вещи должно быть числом положительным")
-            @PathVariable Long itemId) throws AccessDeniedException {
+            @PathVariable Long itemId) {
         itemService.delete(itemId, userId);
     }
 

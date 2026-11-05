@@ -1,14 +1,40 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.Objects;
 
-@Data
-@EqualsAndHashCode(of = "id")
+@Getter @Setter @ToString
+@Entity
+@Table(name = "items")
 public class Item {
-    Long id;
-    Long ownerId;
-    String name;
-    String description;
-    Boolean available;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(name = "is_available", nullable = false)
+    private Boolean available;
+
+    @Column(nullable = false)
+    private Long ownerId;
+
+    private Long requestId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

@@ -28,9 +28,9 @@ public class ErrorHandler {
         return new ErrorResponse("Произошла непредвиденная ошибка. " + e.getMessage());
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler({ConstraintViolationException.class, ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+    public ErrorResponse handleConstraintViolationException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
 
