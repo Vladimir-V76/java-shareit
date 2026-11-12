@@ -3,13 +3,16 @@ package ru.practicum.shareit.booking;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.model.BookingState;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/bookings")
 @Validated
@@ -41,6 +44,7 @@ public class BookingController {
 
             @NotBlank(message = "Статус бронирования должен быть указан")
             @RequestParam String approved) {
+
         return bookingService.approvedBooking(bookingId, userId, approved);
     }
 
@@ -56,13 +60,24 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingDto> findByUserIdAndStatus(
+    public List<BookingDto> findBookingsByUserIdAndStatus(
             @Positive(message = "Id пользователя должно быть числом положительным")
             @RequestHeader("X-Sharer-User-Id")
             Long userId,
 
             @RequestParam(defaultValue = "ALL")
-            String state) {
-        return bookingService.findByUserIdAndStatus(userId, state);
+            BookingState state) {
+        return bookingService.findBookingsByBookerIdAndStatus(userId, state);
+    }
+
+    @GetMapping("/owner")
+    public List<BookingDto> findBookingsAllItemsByUserId(
+            @Positive(message = "Id пользователя должно быть числом положительным")
+            @RequestHeader("X-Sharer-User-Id")
+            Long userId,
+
+            @RequestParam(defaultValue = "ALL")
+            BookingState state) {
+        return bookingService.findBookingsByOwnerIdAndStatus(userId, state);
     }
 }

@@ -2,9 +2,13 @@ package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.shareit.user.model.User;
+
 import java.util.Objects;
 
-@Getter @Setter @ToString
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "items")
 public class Item {
@@ -21,8 +25,9 @@ public class Item {
     @Column(name = "is_available", nullable = false)
     private Boolean available;
 
-    @Column(nullable = false)
-    private Long ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     private Long requestId;
 

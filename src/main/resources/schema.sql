@@ -44,5 +44,6 @@ CREATE TABLE IF NOT EXISTS comments (
     text VARCHAR(512) NOT NULL,
     item_id BIGINT NOT NULL,
     author_id BIGINT NOT NULL,
+    created TIMESTAMP NOT NULL,
     CONSTRAINT pk_comments PRIMARY KEY (id)
 );

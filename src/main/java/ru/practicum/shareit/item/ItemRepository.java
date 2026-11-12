@@ -6,15 +6,18 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByOwnerId(Long ownerId);
 
-    @Query("select i from Item i " +
-            "where i.available = true and (lower(i.name) like concat('%', ?1, '%') " +
-            "or lower(i.description) like concat('%', ?1, '%'))")
+    @Query("""
+            SELECT i
+            FROM Item i
+            WHERE i.available = true
+                    AND (LOWER(i.name) LIKE CONCAT('%', ?1, '%')
+                    OR LOWER(i.description) LIKE CONCAT('%', ?1, '%'))
+            """)
     List<Item> searchItems(String searchText);
 }

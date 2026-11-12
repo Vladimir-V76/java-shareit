@@ -2,15 +2,14 @@ package ru.practicum.shareit.item;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/items")
 @Validated
@@ -34,15 +33,20 @@ public class ItemController {
     @ResponseBody
     public ItemDto findById(
             @Positive(message = "Id вещи должно быть числом положительным")
-            @PathVariable Long itemId) {
-        return itemService.findById(itemId);
-    }
+            @PathVariable Long itemId,
 
-    @GetMapping
-    public List<ItemDto> findByOwnerId(
             @Positive(message = "Id пользователя должно быть числом положительным")
             @RequestHeader("X-Sharer-User-Id")
             Long userId) {
+        return itemService.findById(itemId, userId);
+    }
+
+    @GetMapping
+    public List<ItemBookingDatesDto> findByOwnerId(
+            @Positive(message = "Id пользователя должно быть числом положительным")
+            @RequestHeader("X-Sharer-User-Id")
+            Long userId) {
+
         return itemService.findAllByOwnerId(userId);
     }
 
@@ -73,7 +77,22 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
+    public List<ItemWithoutCommentDto> searchItem(@RequestParam String text) {
         return itemService.searchItems(text);
     }
+
+    @PostMapping("{itemId}/comment")
+    public CommentDto addComment(
+            @Positive(message = "Id пользователя должно быть числом положительным")
+            @RequestHeader("X-Sharer-User-Id")
+            Long userId,
+
+            @Positive(message = "Id вещи должно быть числом положительным")
+            @PathVariable Long itemId,
+
+            @Valid @RequestBody NewCommentRequest newComment) {
+        return itemService.addCommentByItemId(itemId, userId, newComment);
+    }
+
+
 }
