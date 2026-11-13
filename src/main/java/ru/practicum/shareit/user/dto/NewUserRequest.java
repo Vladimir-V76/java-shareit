@@ -8,7 +8,8 @@ import lombok.Data;
 public class NewUserRequest {
     @NotBlank(message = "Электронная почта не может быть пустой")
     @Email(message = "Некорректный формат email")
-    String email;
+    private String email;
 
-    String name;
+    @NotBlank(message = "Имя должно быть указано")
+    private String name;
 }

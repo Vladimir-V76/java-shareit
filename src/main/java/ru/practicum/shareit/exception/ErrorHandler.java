@@ -22,15 +22,9 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleOtherExceptions(final Throwable e) {
-        return new ErrorResponse("Произошла непредвиденная ошибка. " + e.getMessage());
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler({ValidationException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+    public ErrorResponse handleConstraintViolationException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -38,5 +32,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenItemUpdateException(ForbiddenItemUpdateException e) {
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOtherExceptions(final Throwable e) {
+        return new ErrorResponse("Произошла непредвиденная ошибка. " + e.getMessage());
     }
 }
