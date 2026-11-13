@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
-import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStateSearchQuery;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class BookingController {
             Long userId,
 
             @RequestParam(defaultValue = "ALL")
-            BookingState state) {
+            BookingStateSearchQuery state) {
         return bookingService.findBookingsByBookerIdAndStatus(userId, state);
     }
 
@@ -77,7 +77,7 @@ public class BookingController {
             Long userId,
 
             @RequestParam(defaultValue = "ALL")
-            BookingState state) {
+            BookingStateSearchQuery state) {
         return bookingService.findBookingsByOwnerIdAndStatus(userId, state);
     }
 }

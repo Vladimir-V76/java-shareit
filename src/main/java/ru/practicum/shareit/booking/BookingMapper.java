@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -22,7 +23,7 @@ public class BookingMapper {
         booking.setEnd(newBooking.getEnd());
         booking.setItem(item);
         booking.setBooker(user);
-        booking.setStatus(newBooking.getStatus());
+        booking.setStatus(BookingStatus.WAITING);
 
         return booking;
     }

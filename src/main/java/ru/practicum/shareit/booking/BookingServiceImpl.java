@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingState;
+import ru.practicum.shareit.booking.model.BookingStateSearchQuery;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.exception.ForbiddenItemUpdateException;
@@ -82,7 +82,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findBookingsByBookerIdAndStatus(Long userId, BookingState state) {
+    public List<BookingDto> findBookingsByBookerIdAndStatus(Long userId, BookingStateSearchQuery state) {
         findUserById(userId);
         BooleanExpression byBookerId = QBooking.booking.booker.id.eq(userId);
         BooleanExpression byState = choiceState(state);
@@ -93,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findBookingsByOwnerIdAndStatus(Long userId, BookingState state) {
+    public List<BookingDto> findBookingsByOwnerIdAndStatus(Long userId, BookingStateSearchQuery state) {
         findUserById(userId);
         BooleanExpression byOwnerId = QBooking.booking.item.owner.id.eq(userId);
         BooleanExpression byState = choiceState(state);
@@ -118,17 +118,14 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
     }
 
-    private BooleanExpression choiceState(BookingState state) {
+    private BooleanExpression choiceState(BookingStateSearchQuery state) {
         LocalDateTime now = LocalDateTime.now();
         return switch (state) {
             case ALL -> QBooking.booking.status.in(BookingStatus.values());
-            case CURRENT -> QBooking.booking.status.eq(BookingStatus.APPROVED)
-                    .and(QBooking.booking.start.before(now))
+            case CURRENT -> QBooking.booking.start.before(now)
                     .and(QBooking.booking.end.after(now));
-            case PAST -> QBooking.booking.status.eq(BookingStatus.APPROVED)
-                    .and(QBooking.booking.end.before(now));
-            case FUTURE -> QBooking.booking.status.eq(BookingStatus.APPROVED)
-                    .and(QBooking.booking.start.after(now));
+            case PAST -> QBooking.booking.end.before(now);
+            case FUTURE -> QBooking.booking.start.after(now);
             case WAITING -> QBooking.booking.status.eq(BookingStatus.WAITING);
             case REJECTED -> QBooking.booking.status.eq(BookingStatus.REJECTED);
         };

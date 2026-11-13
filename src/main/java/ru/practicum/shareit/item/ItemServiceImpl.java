@@ -16,8 +16,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -52,7 +51,20 @@ public class ItemServiceImpl implements ItemService {
             return List.of();
         }
         LocalDateTime now = LocalDateTime.now();
-        return bookingRepository.findLastAndNextEnds(itemIds, now);
+        List<ItemBookingDatesDto> bookingDatesDtoS = bookingRepository.findLastAndNextEnds(itemIds, now);
+        List<Comment> comments = commentRepository.findByItemIdIn(itemIds);
+        Map<Long, List<CommentDto>> mapCommentDtoS = new HashMap<>();
+
+        for (Comment comment : comments) {
+            long itemId = comment.getItem().getId();
+            List<CommentDto> commentDtoS = mapCommentDtoS.getOrDefault(itemId, new ArrayList<>());
+            commentDtoS.add(ItemMapper.mapToCommentDto(comment));
+            mapCommentDtoS.put(itemId, commentDtoS);
+        }
+        bookingDatesDtoS.forEach(dto ->
+                dto.setComments(mapCommentDtoS.get(dto.getItemId())));
+
+        return bookingDatesDtoS;
     }
 
     @Override
