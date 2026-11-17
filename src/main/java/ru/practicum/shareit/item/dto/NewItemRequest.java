@@ -8,11 +8,11 @@ import lombok.Data;
 public class NewItemRequest {
 
     @NotBlank(message = "Имя должно быть указано")
-    String name;
+    private String name;
 
     @NotBlank(message = "Описание не может быть пустым")
-    String description;
+    private String description;
 
     @NotNull(message = "Статус доступности должен быть указан")
-    Boolean available;
+    private Boolean available;
 }

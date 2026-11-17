@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class UpdateItemRequest {
-    String name;
-    String description;
-    Boolean available;
+    private String name;
+    private String description;
+    private Boolean available;
 
     public boolean hasName() {
         return (name != null && !name.isBlank());

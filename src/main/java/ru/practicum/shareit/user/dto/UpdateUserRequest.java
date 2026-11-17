@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class UpdateUserRequest {
-    String email;
-    String name;
+    private String email;
+    private String name;
 
     public boolean hasEmail() {
         return (email != null && !email.isBlank());

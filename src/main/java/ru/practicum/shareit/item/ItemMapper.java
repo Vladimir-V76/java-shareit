@@ -1,17 +1,19 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.model.User;
+
+import java.util.List;
 
 @Service
 public class ItemMapper {
 
-    public static Item mapToItem(NewItemRequest newItem, Long ownerId) {
+    public static Item mapToItem(NewItemRequest newItem, User user) {
         Item item = new Item();
-        item.setOwnerId(ownerId);
+        item.setOwner(user);
         item.setName(newItem.getName());
         item.setDescription(newItem.getDescription());
         item.setAvailable(newItem.getAvailable());
@@ -19,12 +21,15 @@ public class ItemMapper {
         return item;
     }
 
-    public static ItemDto mapToItemDto(Item item) {
+    public static ItemDto mapToItemDto(Item item, List<CommentDto> comments, ItemBookingDatesDto itemBookingDatesDto) {
         ItemDto itemDto = new ItemDto();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
+        itemDto.setComments(comments);
+        itemDto.setLastBooking(itemBookingDatesDto.getLastBooking());
+        itemDto.setNextBooking(itemBookingDatesDto.getNextBooking());
 
         return itemDto;
     }
@@ -39,5 +44,40 @@ public class ItemMapper {
         if (updateItem.hasAvailable()) {
             item.setAvailable(updateItem.getAvailable());
         }
+    }
+
+    public static List<CommentDto> mapToListCommentDto(List<Comment> comments) {
+        return comments.stream()
+                .map(c -> new CommentDto(
+                        c.getId(),
+                        c.getText(),
+                        c.getAuthor().getId(),
+                        c.getAuthor().getName(),
+                        c.getCreated().toString()))
+                .toList();
+    }
+
+    public static ItemWithoutCommentDto mapToItemWithoutCommentDto(Item item) {
+        return new ItemWithoutCommentDto(
+                item.getId(), item.getName(), item.getDescription(), item.getAvailable());
+    }
+
+    public static CommentDto mapToCommentDto(Comment comment) {
+        return new CommentDto(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getId(),
+                comment.getAuthor().getName(),
+                comment.getCreated().toString());
+    }
+
+    public static Comment mapToComment(Item item, User author, NewCommentRequest newComment) {
+        Comment comment = new Comment();
+        comment.setText(newComment.getText());
+        comment.setItem(item);
+        comment.setAuthor(author);
+        comment.setCreated(newComment.getCreated());
+
+        return comment;
     }
 }
